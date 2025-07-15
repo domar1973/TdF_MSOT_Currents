@@ -1,0 +1,25 @@
+Esta versión de "MSOT" construye una imagen docker con todos los paquetes necesarios
+para compilar y correr croco. Al correr un contenedor se monta la carpeta MSOT. Se puede compilar y
+ejecutar desde el contenedor, y lo que se haga quedará persistente en la carpeta.
+Los archivos de configuración y salida pueden manejarse perfectamente desde el host.
+
+Instrucciones:
+Si estás leyendo esto, ya descomprimiste el tar.
+Si no tenés Docker instalado, instalalo ahora.
+
+1) Desde la carpeta donde está este readme, correr
+> ./deploy.sh
+(esto se hace solo una vez. Esto construye la imagen y el script que la ejecuta)
+
+2) Para correr el contenedor, en la misma carpeta ejecuta
+> ./run.sh
+Esto va a abrir una sesión interactiva de linea de comando. 
+
+3) Recomendaciones:
+
+   - Tener una segunda pestana de la terminal en la carpeta montada en el host, para manipular con comodidad.
+     Esto permite además manejar docker ps, docker stop, etc.
+
+   - Para correr croco, aún es necesario compilar usando jobcomp.
+
+   - Enviar dudas o sugerencias a dani.en.villa.rica@gmail.com
