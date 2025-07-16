@@ -306,10 +306,19 @@ def make_forcing(miembro = miembro, dominio = dominio, fecha_inicial = fecha_ini
         # No hace falta realizar interpolaciones
         Eamp = tide_file.ha
         Ephase = tide_file.hp * np.pi / 180
+        Cmax  = tide_file.tide_Cmax
+        Cmin  = tide_file.tide_Cmin
+        Cangle = tide_file.tide_Cangle * np.pi / 180
+        Cphase = tide_file.tide_Cphase * np.pi / 180
 
         for p, cmd in enumerate(Eamp["nc"]):
-            Eamp.loc[cmd] *= nodal_factors.f[p]
-            Ephase.loc[cmd] = np.mod((Ephase.loc[cmd] - nodal_factors.phi[p] - nodal_factors.u[p]) *  180/np.pi, 360)
+            Eamp.loc[cmd]   *= nodal_factors.f[p]
+            Cmax.loc[cmd]   *= nodal_factors.f[p]
+            Cmin.loc[cmd]   *= nodal_factors.f[p]
+            shift = nodal_factors.phi[p] + nodal_factors.u[p]
+            Ephase.loc[cmd]  = np.mod((Ephase.loc[cmd] - shift) * 180/np.pi, 360)
+            Cangle.loc[cmd]  = np.mod((Cangle.loc[cmd] - shift) * 180/np.pi, 360)
+            Cphase.loc[cmd]  = np.mod((Cphase.loc[cmd] - shift) * 180/np.pi, 360)
 
         frc["tide_period"] = ('tide_period', 2*np.pi/nodal_factors.omega/3600)
         frc.tide_period.attrs = {"long_name": 'Tide angular period',
@@ -319,7 +328,11 @@ def make_forcing(miembro = miembro, dominio = dominio, fecha_inicial = fecha_ini
                                  "units": 'degrees'}
         frc["tide_Eamp"] = (['tide_period','eta_rho','xi_rho'], Eamp.data)
         frc.tide_Eamp.attrs = {"lon_name": 'Tidal elevation amplitude',
-                "units": 'meters'}    
+                               "units": 'meters'}
+        frc["tide_Cmax"] = (['tide_period','xi_rho','eta_rho'], Cmax.data)
+        frc["tide_Cmin"] = (['tide_period','xi_rho','eta_rho'], Cmin.data)
+        frc["tide_Cangle"] = (['tide_period','xi_rho','eta_rho'], Cangle.data)
+        frc["tide_Cphase"] = (['tide_period','xi_rho','eta_rho'], Cphase.data)
 
     # Friccion de fondo
     frc["QBFC"] = (['eta_rho','xi_rho'], 2.25e-3 * np.ones_like(grd.h.values))
